@@ -1,0 +1,62 @@
+---
+title: "Calculating importance values"
+output: html_notebook
+---
+## Introduction
+
+This markdown document will walk through the calculation of importance values from first calculating frequency, density and dominance values for species in a forest plot.
+
+The test data set in this project comes from the 2017 Forest Ecology class.
+
+## Step 1. Pull in and review data.  Fix any errors
+
+```{r}
+trees<-read.csv("trees.csv", sep = ",", stringsAsFactors = F)
+```
+Now get rid of some columns we don't need
+
+```{r}
+library(dplyr)
+delete_cols<-c("PlotNum", "PlotID", "Quadrant", "Xcoord", "Ycoord", "DistanceM", "HtPercent", "TreeHeightM")
+
+trees<-trees[,!(names(trees)%in% delete_cols)]
+```
+Now let's make some factors
+```{r}
+trees$Forest<-as.factor(trees$Forest)
+trees$Species<-as.factor(trees$Species)
+```
+Now check levels of factors
+```{r}
+levels(trees$Forest)
+levels(trees$Species)
+```
+Need to fix some species issues:
+1) `Sugar maple?`, `Sugar maple` are the same thing.
+2) `not recorded`, `Unknown1` and `unknown` should be pooled
+
+```{r}
+acerSaccharum<-which(trees$Species == "Sugar maple?" | trees$Species == "Sugar maple")
+unknown<-which(trees$Species == "not recorded" | trees$Species == "Unknown1" | trees$Species == "unknown")
+```
+Now fix
+```{r}
+trees$Species[acerSaccharum]<-"Sugar maple"
+trees$Species[unknown]<-"unknown"
+
+```
+Now regain factor levels
+```{r}
+trees$Species<-factor(trees$Species)
+levels(trees$Species)
+```
+And now get rid of the unknowns
+```{r}
+trees<-filter(trees, Species != "unknown")
+```
+Now save data
+```{r}
+write.csv(trees, "cleanTrees.csv")
+```
+
+
