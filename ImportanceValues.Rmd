@@ -1,0 +1,36 @@
+---
+title: "Calculate Importance Values"
+output: html_notebook
+---
+## Introduction
+
+This is the code that we need to calculate the importance values for species of trees in a single forest.  
+
+## Step 1. Set up the workspace
+
+```{r}
+rm(list = ls())
+library(dplyr)
+library(ggplot2)
+```
+
+## Step 2.  Import data and isolate to a single forest
+
+```{r}
+trees<-read.csv("cleanTrees.csv", sep = ",")
+```
+Source custom functions
+```{r}
+source("ImportanceFunctions.R")
+```
+Determine how many forests there are
+```{r}
+Forests<-count_forests(trees)
+```
+Now clean up DBH < 10
+```{r}
+trees<-fix_dbh(trees)
+```
+
+
+
